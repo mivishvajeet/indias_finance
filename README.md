@@ -12,6 +12,23 @@ Engineered with a **Bloomberg Terminal-inspired UX** and a **QA-first paradigm**
 
 ---
 
+## 📚 Technical Documentation, Presentation & Interview Resources
+
+All architecture blueprints, forensics, question banks, and presentation decks are available inside the `docs/` directory:
+
+| Deliverable / Guide | Format | Description & Scope |
+| :--- | :---: | :--- |
+| **[Master Technical Handbook](docs/PROJECT_TECHNICAL_HANDBOOK.md)** | `Markdown` / **[PDF](docs/PROJECT_TECHNICAL_HANDBOOK.pdf)** | 19-chapter comprehensive technical handbook covering full architecture, formulas, and walkthroughs. |
+| **[Interactive Presentation Deck](docs/India_Finance_Intelligence_Presentation.html)** | `HTML` / **[PPTX](docs/India_Finance_Intelligence_Presentation.pptx)** | 30-slide animated presentation deck with Bloomberg UI styling, live charts, and embedded speaker notes. |
+| **[System Architecture Blueprints](docs/PROJECT_ARCHITECTURE.md)** | `Markdown` | 9 high-resolution Mermaid blueprints (End-to-End, Medallion, dbt DAG, Quality Gate, ERD). |
+| **[Repository File Inventory](docs/PROJECT_FILE_INVENTORY.md)** | `Markdown` | Complete forensic audit of every module, class, function, read/write path, and dependency. |
+| **[Implementation Evidence Matrix](docs/IMPLEMENTATION_EVIDENCE.md)** | `Markdown` | Verification matrix validating every claim against active source code and test outputs. |
+| **[Interview Question Bank (100+ Qs)](docs/INTERVIEW_QUESTION_BANK.md)** | `Markdown` | 100 deep-dive questions across 10 categories + advanced SQL interview exercises. |
+| **[Interview Quick Revision](docs/INTERVIEW_QUICK_REVISION.md)** | `Markdown` | 1-page rapid revision cheat sheet (formulas, commands, top 25 Q&As, common traps). |
+| **[Presentation Speaker Notes](docs/PRESENTATION_SPEAKER_NOTES.md)** | `Markdown` | 30-slide first-person spoken scripts, visual cues, and follow-up defenses. |
+
+---
+
 ## 🖥️ 11 Institutional Financial Terminal Workspaces
 
 The terminal provides 11 dedicated workspaces in a persistent dark interface (`#080C12`, `#111A26`):
