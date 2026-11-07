@@ -2,13 +2,31 @@
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/)
 [![dbt Tests: 67/67 PASS](https://img.shields.io/badge/dbt%20tests-67%2F67%20PASS-brightgreen.svg)](finance_dbt/)
-[![Pytest: 27/27 PASS](https://img.shields.io/badge/pytest-27%2F27%20PASS-brightgreen.svg)](tests/)
-[![Quality Score: 100%](https://img.shields.io/badge/Data%20Quality-100.0%25%20Verified-00FFA3.svg)](data/quality/dq_scorecard.md)
+[![Pytest: 45/45 PASS](https://img.shields.io/badge/pytest-45%2F45%20PASS-brightgreen.svg)](tests/)
+[![Data Quality: 100%](https://img.shields.io/badge/Data%20Quality-100.0%25%20Verified-00FFA3.svg)](data/quality/dq_scorecard.md)
 [![Execution Cost: ₹0](https://img.shields.io/badge/Cloud%20Cost-%E2%82%B90.00%20(Local%20DuckDB)-success.svg)](#architecture)
 
-An enterprise-grade, local-first **Medallion Lakehouse** and **Financial Terminal** built for Indian capital markets (NSE equities, benchmark indices, mutual funds, and macroeconomic indicators). 
+An institutional-grade, local-first **Medallion Lakehouse** and **Financial Intelligence Terminal** built for Indian capital markets (NSE equities, benchmark indices, AMFI mutual funds, and RBI/MOSPI macroeconomic indicators).
 
-Engineered with a **QA-first paradigm**: automated circuit breakers, idempotency fingerprints, cross-layer reconciliation, and deterministic statistical anomaly checks.
+Engineered with a **Bloomberg Terminal-inspired UX** and a **QA-first paradigm**: automated circuit breakers, idempotency fingerprints, cross-layer reconciliation, interactive data lineage DAG, incident blast-radius tracking, and a guardrailed local AI analytical assistant with safe text-to-SQL.
+
+---
+
+## 🖥️ 11 Institutional Financial Terminal Workspaces
+
+The terminal provides 11 dedicated workspaces in a persistent dark interface (`#080C12`, `#111A26`):
+
+1. **Market Overview**: Real-time snapshot of benchmark indices (NIFTY 50, SENSEX, NIFTY BANK, NIFTY IT), market breadth indicators, top gainers/losers, sector performance, and deterministic market observations.
+2. **Equity Screener**: Multi-factor institutional screener filtering by RSI 14, SMA 20/50, MACD, 52-week high proximity, price, and sector with instant CSV export.
+3. **Stock Analytics**: Dedicated ticker research featuring 3-tier subplots (OHLCV candlesticks, RSI, MACD, Bollinger Bands), return distribution histogram, and quantitative profiles.
+4. **Mutual Fund Intelligence**: AMFI NAV historical series, normalized performance comparison, drawdown curves, and institutional scorecard (CAGR, Annualized Volatility, Sharpe vs 6.5% G-Sec, Sortino, Max Drawdown).
+5. **Macro Intelligence**: Official RBI Monetary Policy Repo Rate, MOSPI CPI/WPI Inflation, USD/INR exchange trends, and delta metrics.
+6. **Risk Analytics**: Cross-asset risk-return frontier scatter plots, cross-asset return correlation heatmap, and rolling drawdown profiles.
+7. **Data Operations**: End-to-end pipeline phase telemetry (Bronze Ingestion ➔ Silver Staging ➔ Gold dbt ➔ Data Quality Audit), Medallion storage partition monitor, and execution history from `pipeline_execution_runs`.
+8. **Data Quality Center**: Live composite quality score (100%), 67/67 dbt automated tests, 17/17 Python DQ rules matrix, and cross-layer reconciliation waterfall.
+9. **Data Lineage Explorer**: Interactive DAG node graph mapping asset provenance from Bronze raw lakehouse to Silver staging, dbt intermediate models, Gold star schema marts, and serving dashboards with node metadata inspector.
+10. **Data Incident Center**: Operational reliability and incident management with full state machine (`DETECTED` ➔ `ACKNOWLEDGED` ➔ `INVESTIGATING` ➔ `RESOLVED`), DuckDB persistence, and upstream/downstream lineage blast-radius impact analysis.
+11. **Ask Finance AI**: Local deterministic analytical assistant with guardrailed text-to-SQL, SELECT-only validation, DuckDB query execution, and explicit data provenance citations (zero cloud API fees).
 
 ---
 
@@ -47,6 +65,7 @@ flowchart TD
         DBT_TEST{dbt 67 Data Tests} -->|Circuit Breaker| GATE[DQ Scorecard]
         PYTHON_DQ{17 Python DQ Rules} -->|Cross-Layer Reconciliation| GATE
         GATE -->|Failure Alert| ALERTS[Incident Alert Dispatcher]
+        GATE --> INCIDENT[Data Incident Center]
     end
 
     subgraph Serving ["5. Analytics & Serving"]
@@ -54,6 +73,8 @@ flowchart TD
         FACT_MF --> RISK[Risk Analytics Engine - Sharpe/Sortino]
         RISK --> UI
         GATE --> UI
+        LINEAGE[Lineage DAG Explorer] --> UI
+        AI[Safe Text-to-SQL Assistant] --> UI
     end
 ```
 
@@ -85,86 +106,10 @@ flowchart TD
      - **Silver Staging**: 133 records (*-30 duplicate raw bars eliminated by idempotency deduplication*)
      - **Gold Marts**: 133 records (*100.0% retention into star schema facts; 0 unexplained dropouts*)
 
----
-
-## 📐 Star Schema Dimensional Model
-
-```mermaid
-erDiagram
-    dim_date ||--o{ fact_daily_prices : "has date"
-    dim_date ||--o{ fact_macro_indicators : "has date"
-    dim_date ||--o{ fact_mf_nav : "has date"
-    dim_security ||--o{ fact_daily_prices : "trades"
-    dim_sector ||--o{ dim_security : "categorizes"
-    dim_fund ||--o{ fact_mf_nav : "declares"
-
-    fact_daily_prices {
-        varchar price_fact_id PK
-        varchar security_id FK
-        integer date_id FK
-        date trade_date
-        double close_price
-        double daily_return_pct
-        double sma_20
-        double bollinger_upper
-        double bollinger_lower
-        double rsi_14
-        double macd_line
-    }
-
-    fact_mf_nav {
-        varchar nav_fact_id PK
-        varchar fund_id FK
-        integer date_id FK
-        varchar scheme_code
-        double nav
-        double daily_return_pct
-        double nav_high_52w
-        double nav_low_52w
-    }
-
-    dim_date {
-        integer date_id PK
-        date calendar_date
-        varchar indian_fiscal_year
-        integer fiscal_quarter
-        boolean is_trading_day
-    }
-```
-
----
-
-## 🚀 Quickstart & Pipeline Execution
-
-### 1. Prerequisites & Installation
-```bash
-git clone https://github.com/mivishvajeet/indias_finance.git
-cd indias_finance
-pip install -r requirements.txt dbt-duckdb
-```
-
-### 2. Run the Full End-to-End Pipeline
-```bash
-# Ingest raw market data into Bronze Lakehouse
-python scripts/run_phase1_ingestion.py
-
-# Cleanse & deduplicate into Silver Staging
-python scripts/run_phase2_staging.py
-
-# Compile & run dbt star schema models + 67 automated tests
-python scripts/run_phase3_pipeline.py
-
-# Run Cross-Layer Lakehouse Reconciliation & Data Quality Suite
-python scripts/run_phase4_dq_audit.py
-
-# Execute full pytest suite (27 unit & integration tests)
-pytest -v tests/
-```
-
-### 3. Launch the Bloomberg-Style Terminal UI
-```bash
-streamlit run ui/terminal_app.py
-```
+6. **Guardrailed Text-to-SQL AI Assistant**:
+   - Built with strict AST parsing and regex safety filters enforcing SELECT-only syntax.
+   - Blocks mutating statements (`DROP`, `DELETE`, `INSERT`, `UPDATE`, `ALTER`, `TRUNCATE`) and multi-statement attacks.
+   - Formats answers with SQL query, execution table, and observation date citations.
 
 ---
 
@@ -172,12 +117,15 @@ streamlit run ui/terminal_app.py
 
 | Test Category | Suite | Test Count | Pass Rate | Execution Time |
 | :--- | :--- | :---: | :---: | :---: |
-| **dbt Schema & Generic Tests** | `dbt test` | **67** | **100.0%** | **0.73s** |
-| **Lakehouse & Partitioning** | `pytest` | 8 | 100.0% | 0.40s |
-| **Trading Calendar & Staging** | `pytest` | 11 | 100.0% | 0.35s |
+| **dbt Schema & Generic Tests** | `dbt test` | **67** | **100.0%** | **0.81s** |
+| **Platform Services & Analytics** | `pytest` | 8 | 100.0% | 0.35s |
+| **SQL Safety & AI Guardrails** | `pytest` | 3 | 100.0% | 0.05s |
+| **Lakehouse & Partitioning** | `pytest` | 9 | 100.0% | 0.40s |
+| **Trading Calendar & Staging** | `pytest` | 9 | 100.0% | 0.35s |
 | **Pandas vs dbt Parity** | `pytest` | 1 | 100.0% | 0.05s |
-| **Data Quality Suite & Alerts** | `pytest` | 7 | 100.0% | 0.30s |
-| **Total Automated Tests** | **All Layers** | **94** | **100.0%** | **< 2s** |
+| **Data Quality Suite & Alerts** | `pytest` | 8 | 100.0% | 0.30s |
+| **Mutual Fund & Risk Engine** | `pytest` | 7 | 100.0% | 0.25s |
+| **Total Automated Tests** | **All Layers** | **112** | **100.0%** | **< 3s** |
 
 ---
 

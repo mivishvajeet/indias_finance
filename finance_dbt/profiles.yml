@@ -3,6 +3,6 @@ finance_dbt:
   outputs:
     dev:
       type: duckdb
-      path: "../data/warehouse/curated.duckdb"
+      path: "{{ env_var('DBT_DUCKDB_PATH', 'data/warehouse/curated.duckdb') }}"
       schema: main
       threads: 4
