@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: fact_daily_prices
-    description: "Star Schema core fact table: Daily prices, returns, and moving averages for Indian equities"
+    description: "Star Schema core fact table: Daily prices, returns, Bollinger Bands, RSI 14, and MACD"
     tests:
       - high_gte_low:
           high_column: high_price
@@ -47,6 +47,11 @@ models:
         tests:
           - not_null
           - price_positive
+
+      - name: rsi_14
+        description: "14-session Relative Strength Index bound between 0 and 100"
+        tests:
+          - rsi_bounds
 
   - name: fact_macro_indicators
     description: "Star Schema macro fact table: Official RBI repo rate, MOSPI CPI, and FX series"

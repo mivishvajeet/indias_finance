@@ -4,6 +4,10 @@ WITH technicals AS (
     SELECT * FROM {{ ref('int_stock_technicals') }}
 ),
 
+ema_macd AS (
+    SELECT * FROM {{ ref('int_stock_ema_macd') }}
+),
+
 securities AS (
     SELECT * FROM {{ ref('dim_security') }}
 ),
@@ -14,14 +18,14 @@ calendar AS (
 
 joined AS (
     SELECT
-        -- Surrogate Primary Key
+        -- Primary Key
         t.stock_price_id AS price_fact_id,
 
-        -- Dimensional Foreign Keys
+        -- Foreign Keys
         s.security_id,
         c.date_id,
         
-        -- Degenerate Dimensions
+        -- Business Keys & Degenerate Dimensions
         t.symbol,
         t.trade_date,
         
@@ -33,7 +37,7 @@ joined AS (
         t.adj_close_price,
         t.volume,
 
-        -- Returns & Technicals
+        -- Returns & Basic Indicators
         t.prev_close_price,
         t.daily_return_pct,
         t.intraday_range_pct,
@@ -44,10 +48,29 @@ joined AS (
         t.low_52w,
         t.is_volume_spike,
         t.avg_prior_20_volume,
+
+        -- Advanced Indicators (Bollinger Bands)
+        t.bollinger_middle,
+        t.bollinger_upper,
+        t.bollinger_lower,
+        t.bollinger_bandwidth,
+
+        -- Momentum Oscillator (RSI)
+        t.rsi_14,
+
+        -- Trend Indicators (EMA & MACD)
+        m.ema_12,
+        m.ema_26,
+        m.macd_line,
+        m.macd_signal_line,
+        m.macd_histogram,
+
+        -- Metadata
         t.is_split_adjusted,
         t.data_source
 
     FROM technicals t
+    INNER JOIN ema_macd m ON t.stock_price_id = m.stock_price_id
     INNER JOIN securities s ON t.symbol = s.symbol
     INNER JOIN calendar c ON t.trade_date = c.calendar_date
 )
