@@ -145,10 +145,9 @@ def load_market_data():
             p.*,
             s.company_name,
             s.security_type,
-            sec.sector_name
+            s.sector_name
         FROM main_marts.fact_daily_prices p
         LEFT JOIN main_marts.dim_security s ON p.security_id = s.security_id
-        LEFT JOIN main_marts.dim_sector sec ON s.sector_id = sec.sector_id
         ORDER BY p.symbol, p.trade_date ASC
     """).df()
     return df
@@ -172,7 +171,7 @@ def load_macro_data():
     con = get_db_connection()
     df = con.execute("""
         SELECT * FROM main_marts.fact_macro_indicators
-        ORDER BY indicator_code, trade_date ASC
+        ORDER BY indicator_code, observation_date ASC
     """).df()
     return df
 
@@ -302,7 +301,7 @@ if menu_choice == "📈 Market Intelligence & Technicals":
         </div>
         """, unsafe_allow_html=True)
     with m6:
-        vol_ratio = (latest_bar['volume'] / latest_bar['avg_volume_20d']) if pd.notnull(latest_bar['avg_volume_20d']) and latest_bar['avg_volume_20d'] > 0 else 1.0
+        vol_ratio = (latest_bar['volume'] / latest_bar['avg_prior_20_volume']) if pd.notnull(latest_bar['avg_prior_20_volume']) and latest_bar['avg_prior_20_volume'] > 0 else 1.0
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-title">Volume vs 20D Avg</div>
@@ -354,9 +353,9 @@ if menu_choice == "📈 Market Intelligence & Technicals":
         fig.add_hline(y=30, line_dash="dot", line_color="#00FFA3", row=2, col=1)
 
     # 3. MACD Subplot
-    if "macd_line" in sec_df.columns and "macd_signal" in sec_df.columns:
+    if "macd_line" in sec_df.columns and "macd_signal_line" in sec_df.columns:
         fig.add_trace(go.Scatter(x=sec_df["trade_date"], y=sec_df["macd_line"], name="MACD", line=dict(color="#00FFA3", width=1.5)), row=3, col=1)
-        fig.add_trace(go.Scatter(x=sec_df["trade_date"], y=sec_df["macd_signal"], name="Signal", line=dict(color="#FFB800", width=1.5)), row=3, col=1)
+        fig.add_trace(go.Scatter(x=sec_df["trade_date"], y=sec_df["macd_signal_line"], name="Signal", line=dict(color="#FFB800", width=1.5)), row=3, col=1)
         hist_colors = ["#00FFA3" if v >= 0 else "#FF3366" for v in sec_df["macd_histogram"].fillna(0)]
         fig.add_trace(go.Bar(x=sec_df["trade_date"], y=sec_df["macd_histogram"], name="Hist", marker_color=hist_colors), row=3, col=1)
 
@@ -461,21 +460,21 @@ elif menu_choice == "💼 Mutual Fund Risk Engine":
 elif menu_choice == "🏛️ Macroeconomic Indicators":
     st.subheader("🏛️ Indian Macroeconomic Indicators (RBI & FX Trajectory)")
 
-    usdinr_df = macro_df[macro_df["indicator_code"] == "USD_INR"].sort_values("trade_date")
-    repo_df = macro_df[macro_df["indicator_code"] == "REPO_RATE"].sort_values("trade_date")
+    usdinr_df = macro_df[macro_df["indicator_code"] == "USD_INR"].sort_values("observation_date")
+    repo_df = macro_df[macro_df["indicator_code"] == "REPO_RATE"].sort_values("observation_date")
 
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("#### USD / INR Exchange Rate")
         fig_usd = go.Figure()
-        fig_usd.add_trace(go.Scatter(x=usdinr_df["trade_date"], y=usdinr_df["indicator_value"], line=dict(color="#00FFA3", width=2)))
+        fig_usd.add_trace(go.Scatter(x=usdinr_df["observation_date"], y=usdinr_df["indicator_value"], line=dict(color="#00FFA3", width=2)))
         fig_usd.update_layout(height=350, template="plotly_dark", plot_bgcolor="#0b0e14", paper_bgcolor="#0b0e14", margin=dict(l=10, r=10, t=10, b=10))
         st.plotly_chart(fig_usd, use_container_width=True)
 
     with col2:
         st.markdown("#### RBI Monetary Policy Repo Rate (%)")
         fig_repo = go.Figure()
-        fig_repo.add_trace(go.Scatter(x=repo_df["trade_date"], y=repo_df["indicator_value"], line=dict(color="#FFB800", width=2)))
+        fig_repo.add_trace(go.Scatter(x=repo_df["observation_date"], y=repo_df["indicator_value"], line=dict(color="#FFB800", width=2)))
         fig_repo.update_layout(height=350, template="plotly_dark", plot_bgcolor="#0b0e14", paper_bgcolor="#0b0e14", margin=dict(l=10, r=10, t=10, b=10))
         st.plotly_chart(fig_repo, use_container_width=True)
 
