@@ -11,20 +11,25 @@ venv/
 dist/
 build/
 
-# Storage / Data / Warehouse
+# Storage / Data / Lakehouse / Warehouses (Heavy & Generated Artifacts)
 data/lakehouse/
 data/warehouse/
 *.duckdb
 *.duckdb.wal
 *.parquet
 
-# Environment & Secrets
+# dbt Artifacts
+finance_dbt/target/
+finance_dbt/dbt_packages/
+finance_dbt/logs/
+
+# Environment & Secrets (Never commit credentials)
 .env
 .env.local
 *.pem
 *.key
 
-# IDE & OS
+# IDE & Operating System
 .DS_Store
 .idea/
 .vscode/
