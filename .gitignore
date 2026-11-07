@@ -39,3 +39,7 @@ finance_dbt/logs/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Data Quality Logs
+data/quality/*.json
+data/quality/*.jsonl

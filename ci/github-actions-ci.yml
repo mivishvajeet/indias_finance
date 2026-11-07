@@ -1,0 +1,62 @@
+name: India Finance Terminal CI/CD & Data Quality Gate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  data-engineering-qa-gate:
+    name: Lakehouse Pipeline & Data Quality Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install dbt-duckdb pytest pytest-mock
+
+      - name: Execute Phase 1: Lakehouse Bronze Ingestion
+        run: |
+          python scripts/run_phase1_ingestion.py
+
+      - name: Execute Phase 2: Silver Staging & Calendar Audit
+        run: |
+          python scripts/run_phase2_staging.py
+
+      - name: Execute Phase 3: dbt Seeds & Models
+        run: |
+          cd finance_dbt
+          dbt seed --profiles-dir .
+          dbt run --profiles-dir .
+
+      - name: Execute Phase 3: dbt 48 Quality Gate Tests
+        run: |
+          cd finance_dbt
+          dbt test --profiles-dir .
+
+      - name: Execute Phase 4: Lakehouse Cross-Layer Reconciliation & DQ Suite
+        run: |
+          python scripts/run_phase4_dq_audit.py
+
+      - name: Run Full Pytest QA Audit Suite
+        run: |
+          pytest -v tests/
+
+      - name: Upload Data Quality Scorecard
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-quality-scorecard
+          path: data/quality/dq_scorecard.md
+          if-no-files-found: warn
