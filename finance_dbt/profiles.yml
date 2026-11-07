@@ -1,0 +1,8 @@
+finance_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../data/warehouse/curated.duckdb"
+      schema: main
+      threads: 4

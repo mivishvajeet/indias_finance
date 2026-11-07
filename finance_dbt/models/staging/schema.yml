@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: stg_stocks
+    description: "Standardized stock and benchmark price bars with synthesized surrogate primary key"
+    columns:
+      - name: stock_price_id
+        description: "Primary key: MD5 hash of (symbol, trade_date)"
+        tests:
+          - unique
+          - not_null
+
+      - name: symbol
+        description: "NSE equity or benchmark ticker identifier"
+        tests:
+          - not_null
+
+      - name: trade_date
+        description: "Date of the trading session"
+        tests:
+          - not_null
+
+      - name: close_price
+        description: "Closing price in INR"
+        tests:
+          - not_null
+
+      - name: volume
+        description: "Traded shares count"
+        tests:
+          - not_null
+
+  - name: stg_macro
+    description: "Standardized Indian macroeconomic indicators (RBI, MOSPI, FX)"
+    columns:
+      - name: macro_indicator_id
+        description: "Primary key: MD5 hash of (indicator_code, observation_date)"
+        tests:
+          - unique
+          - not_null
+
+      - name: indicator_code
+        description: "Macro series identifier"
+        tests:
+          - not_null
+
+      - name: observation_date
+        description: "Observation date"
+        tests:
+          - not_null
+
+      - name: indicator_value
+        description: "Recorded value"
+        tests:
+          - not_null

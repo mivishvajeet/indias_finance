@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: raw_staging
+    description: "DuckDB staging tables ingested from Bronze Parquet partitions by SilverStagingManager"
+    schema: main
+    tables:
+      - name: stg_stocks_daily
+        description: "Deduplicated daily OHLCV prices and split indicators from NSE / yfinance"
+        columns:
+          - name: symbol
+            description: "NSE equity or benchmark ticker identifier"
+          - name: trade_date
+            description: "Date of the trading session (YYYY-MM-DD)"
+          - name: close
+            description: "Official unadjusted closing price in INR"
+          - name: volume
+            description: "Traded share volume"
+
+      - name: stg_macro_indicators
+        description: "Cleaned official Indian macroeconomic observations (RBI, MOSPI, FX)"
+        columns:
+          - name: indicator_code
+            description: "Macro code: REPO_RATE, CPI_INFLATION, USD_INR, etc."
+          - name: trade_date
+            description: "Observation date"
+          - name: value
+            description: "Indicator value"

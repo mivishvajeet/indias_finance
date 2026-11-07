@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Storage / Data / Warehouse
+data/lakehouse/
+data/warehouse/
+*.duckdb
+*.duckdb.wal
+*.parquet
+
+# Environment & Secrets
+.env
+.env.local
+*.pem
+*.key
+
+# IDE & OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/

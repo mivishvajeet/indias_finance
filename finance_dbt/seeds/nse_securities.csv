@@ -1,0 +1,23 @@
+symbol,name,sector,industry,isin,security_type
+^NSEI,Nifty 50,Benchmark Index,Benchmark Index,IN0000000001,INDEX
+^NSEBANK,Nifty Bank,Sectoral Index,Benchmark Index,IN0000000002,INDEX
+RELIANCE.NS,Reliance Industries Ltd,Oil & Gas / Energy,Refineries,INE002A01018,EQUITY
+TCS.NS,Tata Consultancy Services Ltd,Information Technology,IT Services & Consulting,INE467B01029,EQUITY
+HDFCBANK.NS,HDFC Bank Ltd,Financial Services,Private Sector Bank,INE040A01034,EQUITY
+ICICIBANK.NS,ICICI Bank Ltd,Financial Services,Private Sector Bank,INE090A01021,EQUITY
+INFY.NS,Infosys Ltd,Information Technology,IT Services & Consulting,INE009A01021,EQUITY
+HINDUNILVR.NS,Hindustan Unilever Ltd,Fast Moving Consumer Goods,Diversified FMCG,INE030A01027,EQUITY
+ITC.NS,ITC Ltd,Fast Moving Consumer Goods,Cigarettes & FMCG,INE154A01025,EQUITY
+LT.NS,Larsen & Toubro Ltd,Construction & Engineering,Engineering - Industrial,INE018A01030,EQUITY
+SBIN.NS,State Bank of India,Financial Services,Public Sector Bank,INE062A01020,EQUITY
+BHARTIARTL.NS,Bharti Airtel Ltd,Telecommunication,Telecom - Services,INE397D01024,EQUITY
+KOTAKBANK.NS,Kotak Mahindra Bank Ltd,Financial Services,Private Sector Bank,INE237A01028,EQUITY
+BAJFINANCE.NS,Bajaj Finance Ltd,Financial Services,Non Banking Financial Company (NBFC),INE296A01024,EQUITY
+MARUTI.NS,Maruti Suzuki India Ltd,Automobile and Auto Components,Passenger Cars,INE585B01010,EQUITY
+TITAN.NS,Titan Company Ltd,Consumer Durables,Jewellery & Watches,INE280A01028,EQUITY
+SUNPHARMA.NS,Sun Pharmaceutical Industries Ltd,Healthcare,Pharmaceuticals,INE044A01036,EQUITY
+TATASTEEL.NS,Tata Steel Ltd,Metals & Mining,Iron & Steel,INE081A01020,EQUITY
+ASIANPAINT.NS,Asian Paints Ltd,Consumer Durables,Paints,INE021A01026,EQUITY
+AXISBANK.NS,Axis Bank Ltd,Financial Services,Private Sector Bank,INE238A01034,EQUITY
+NTPC.NS,NTPC Ltd,Power,Power Generation,INE733E01010,EQUITY
+POWERGRID.NS,Power Grid Corporation of India Ltd,Power,Power Transmission,INE752E01010,EQUITY

@@ -1,0 +1,13 @@
+
+    
+    
+    
+    create table "curated"."main"."nse_securities" ("symbol" text,"name" text,"sector" text,"industry" text,"isin" text,"security_type" text)
+  ;
+    -- dbt seed --
+    
+          COPY "curated"."main"."nse_securities" FROM '/Users/mivishvajeet/Downloads/indias-finance/finance_dbt/seeds/nse_securities.csv' (FORMAT CSV, HEADER TRUE, DELIMITER ',')
+        
+
+;
+  

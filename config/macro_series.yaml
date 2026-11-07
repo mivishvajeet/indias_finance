@@ -1,0 +1,36 @@
+# Macroeconomic Indicator Registry (RBI, MOSPI, FRED, yfinance)
+indicators:
+  - code: "REPO_RATE"
+    name: "RBI Policy Repo Rate"
+    source: "Reserve Bank of India (RBI)"
+    frequency: "policy_decision"
+    unit: "percentage"
+    description: "Benchmark interest rate at which RBI lends short-term money to commercial banks"
+
+  - code: "CPI_INFLATION"
+    name: "India CPI Combined (YoY)"
+    source: "MOSPI (Ministry of Statistics & Programme Implementation)"
+    frequency: "monthly"
+    unit: "percentage"
+    description: "Headline retail Consumer Price Index inflation rate"
+
+  - code: "IIP_GROWTH"
+    name: "Index of Industrial Production Growth (YoY)"
+    source: "MOSPI"
+    frequency: "monthly"
+    unit: "percentage"
+    description: "Growth rate of mining, manufacturing, and electricity output"
+
+  - code: "GDP_GROWTH"
+    name: "India Real GDP Annual Growth Rate"
+    source: "National Statistical Office (NSO) / MOSPI"
+    frequency: "quarterly"
+    unit: "percentage"
+    description: "Annualized real gross domestic product growth percentage"
+
+  - code: "USD_INR"
+    name: "USD to INR Exchange Rate"
+    source: "yfinance (INR=X) / RBI Reference Rate"
+    frequency: "daily"
+    unit: "INR_per_USD"
+    description: "Indian Rupee spot exchange rate against United States Dollar"

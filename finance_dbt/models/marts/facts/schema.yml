@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: fact_daily_prices
+    description: "Star Schema core fact table: Daily prices, returns, and moving averages for Indian equities"
+    columns:
+      - name: price_fact_id
+        description: "Primary key: MD5(symbol, trade_date)"
+        tests:
+          - unique
+          - not_null
+
+      - name: security_id
+        description: "Foreign key to dim_security"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_security')
+              field: security_id
+
+      - name: date_id
+        description: "Foreign key to dim_date"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_id
+
+      - name: close_price
+        description: "Official unadjusted close in INR"
+        tests:
+          - not_null
+
+  - name: fact_macro_indicators
+    description: "Star Schema macro fact table: Official RBI repo rate, MOSPI CPI, and FX series"
+    columns:
+      - name: macro_fact_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+
+      - name: date_id
+        description: "Foreign key to dim_date"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_id
+
+      - name: indicator_value
+        description: "Recorded metric value"
+        tests:
+          - not_null

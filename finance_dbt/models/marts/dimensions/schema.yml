@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: "Conformed date dimension cross-referencing official NSE trading sessions and Indian Fiscal Year"
+    columns:
+      - name: date_id
+        description: "Primary key in integer YYYYMMDD format"
+        tests:
+          - unique
+          - not_null
+
+      - name: calendar_date
+        description: "Actual calendar date"
+        tests:
+          - unique
+          - not_null
+
+      - name: is_trading_day
+        description: "Boolean flag: TRUE if market was scheduled open (Mon-Fri and not holiday)"
+        tests:
+          - not_null
+
+      - name: indian_fiscal_year
+        description: "Indian Fiscal Year representation e.g. FY2025"
+        tests:
+          - not_null
+
+  - name: dim_security
+    description: "Conformed dimension for Indian equities and benchmark indices"
+    columns:
+      - name: security_id
+        description: "Surrogate primary key: MD5(symbol)"
+        tests:
+          - unique
+          - not_null
+
+      - name: symbol
+        description: "Ticker symbol identifier"
+        tests:
+          - unique
+          - not_null
+
+      - name: exchange_code
+        description: "Exchange code"
+        tests:
+          - not_null
+
+      - name: security_type
+        description: "Classification: EQUITY or INDEX"
+        tests:
+          - not_null
+
+  - name: dim_sector
+    description: "Sector rollup dimension"
+    columns:
+      - name: sector_id
+        description: "Primary key: MD5(sector_name)"
+        tests:
+          - unique
+          - not_null
+
+      - name: sector_name
+        description: "Sector classification name"
+        tests:
+          - unique
+          - not_null
