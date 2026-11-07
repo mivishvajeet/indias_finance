@@ -3,6 +3,10 @@ version: 2
 models:
   - name: fact_daily_prices
     description: "Star Schema core fact table: Daily prices, returns, and moving averages for Indian equities"
+    tests:
+      - high_gte_low:
+          high_column: high_price
+          low_column: low_price
     columns:
       - name: price_fact_id
         description: "Primary key: MD5(symbol, trade_date)"
@@ -30,6 +34,19 @@ models:
         description: "Official unadjusted close in INR"
         tests:
           - not_null
+          - price_positive
+
+      - name: high_price
+        description: "Intraday high"
+        tests:
+          - not_null
+          - price_positive
+
+      - name: low_price
+        description: "Intraday low"
+        tests:
+          - not_null
+          - price_positive
 
   - name: fact_macro_indicators
     description: "Star Schema macro fact table: Official RBI repo rate, MOSPI CPI, and FX series"
