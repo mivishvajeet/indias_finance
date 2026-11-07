@@ -26,3 +26,13 @@ sources:
             description: "Observation date"
           - name: value
             description: "Indicator value"
+
+      - name: stg_mf_nav
+        description: "Deduplicated daily Mutual Fund NAVs from AMFI"
+        columns:
+          - name: scheme_code
+            description: "AMFI unique scheme identifier"
+          - name: nav_date
+            description: "NAV declaration date"
+          - name: nav
+            description: "Net Asset Value per unit in INR"

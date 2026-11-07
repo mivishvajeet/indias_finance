@@ -65,3 +65,18 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: dim_fund
+    description: "Indian Mutual Fund schemes master dimension"
+    columns:
+      - name: fund_id
+        tests:
+          - unique
+          - not_null
+      - name: scheme_code
+        tests:
+          - unique
+          - not_null
+      - name: scheme_name
+        tests:
+          - not_null

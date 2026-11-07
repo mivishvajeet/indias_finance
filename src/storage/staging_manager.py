@@ -115,6 +115,46 @@ class SilverStagingManager:
             "warehouse_table": "stg_macro_indicators",
         }
 
+
+    def process_mf_staging(
+        self,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
+    ) -> Dict[str, Any]:
+        """Cleans, deduplicates, and populates stg_mf_nav in DuckDB."""
+        raw_df = self.raw_storage.read_dataset("mf_nav", start_date, end_date)
+        if raw_df.empty:
+            logger.warning("No raw MF NAV data found to stage.")
+            return {"status": "empty", "rows_staged": 0}
+
+        # Deduplicate by scheme_code and nav_date
+        raw_df["ingested_at"] = pd.to_datetime(raw_df["ingested_at"])
+        dedup_df = raw_df.sort_values("ingested_at").groupby(["scheme_code", "nav_date"]).last().reset_index()
+
+        # Sanitize NAV > 0
+        dedup_df = dedup_df[dedup_df["nav"] > 0].copy()
+
+        # Write Silver Parquet
+        silver_parquet_path = self.staging_path / "stg_mf_nav.parquet"
+        dedup_df.to_parquet(silver_parquet_path, index=False, engine="pyarrow", compression="snappy")
+
+        # Sync to DuckDB Warehouse (both in default schema and main_staging)
+        con = duckdb.connect(str(self.warehouse_path))
+        con.execute(f"CREATE OR REPLACE TABLE stg_mf_nav AS SELECT * FROM read_parquet('{silver_parquet_path}')")
+        con.execute("CREATE SCHEMA IF NOT EXISTS main_staging;")
+        con.execute(f"CREATE OR REPLACE TABLE main_staging.stg_mf_nav AS SELECT * FROM read_parquet('{silver_parquet_path}')")
+        con.close()
+
+        logger.info("Successfully staged %d MF NAV records into DuckDB table 'stg_mf_nav'", len(dedup_df))
+        return {
+            "status": "success",
+            "raw_rows": len(raw_df),
+            "staged_rows": len(dedup_df),
+            "duplicates_removed": len(raw_df) - len(dedup_df),
+            "silver_parquet": str(silver_parquet_path),
+            "warehouse_table": "stg_mf_nav",
+        }
+
     def run_all_staging(self) -> Dict[str, Any]:
         """Executes full staging transformation across all raw datasets."""
         stock_res = self.process_stocks_staging()

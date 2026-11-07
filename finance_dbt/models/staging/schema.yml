@@ -53,3 +53,21 @@ models:
         description: "Recorded value"
         tests:
           - not_null
+
+  - name: stg_mf_nav
+    description: "Sanitized daily Mutual Fund NAVs from AMFI"
+    columns:
+      - name: nav_price_id
+        tests:
+          - unique
+          - not_null
+      - name: scheme_code
+        tests:
+          - not_null
+      - name: nav_date
+        tests:
+          - not_null
+      - name: nav
+        tests:
+          - not_null
+          - price_positive

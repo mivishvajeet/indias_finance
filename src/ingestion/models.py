@@ -61,3 +61,22 @@ class IngestionResult(BaseModel):
     is_idempotent_skip: bool = False
     execution_time_sec: float
     error_message: Optional[str] = None
+
+
+class MutualFundNavRawRecord(BaseModel):
+    """Schema for daily Mutual Fund Net Asset Value (NAV) observations in Bronze raw layer."""
+
+    scheme_code: str = Field(..., description="AMFI unique 6-digit scheme code")
+    scheme_name: str = Field(..., description="Full descriptive fund scheme name")
+    nav_date: date = Field(..., description="NAV declaration date (YYYY-MM-DD)")
+    nav: float = Field(..., gt=0.0, description="Net Asset Value in INR per unit")
+    fund_family: str = Field(default="Mutual Fund", description="Asset Management Company (AMC)")
+    scheme_category: str = Field(default="Equity", description="Category e.g. Large Cap, Flexi Cap, Small Cap")
+    source: str = Field(default="AMFI", description="Source provider e.g. AMFI, mfapi")
+    ingested_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="UTC ingestion timestamp")
+    payload_hash: str = Field(default="", description="SHA-256 fingerprint of the record")
+
+    def model_post_init(self, __context) -> None:
+        if not self.payload_hash:
+            raw_str = f"{self.scheme_code}|{self.nav_date.isoformat()}|{self.nav:.4f}"
+            self.payload_hash = hashlib.sha256(raw_str.encode("utf-8")).hexdigest()

@@ -74,3 +74,27 @@ models:
         description: "Recorded metric value"
         tests:
           - not_null
+
+  - name: fact_mf_nav
+    description: "Daily Mutual Fund NAV observations with return and 52W high/low metrics"
+    columns:
+      - name: nav_fact_id
+        tests:
+          - unique
+          - not_null
+      - name: fund_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_fund')
+              field: fund_id
+      - name: date_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_id
+      - name: nav
+        tests:
+          - not_null
+          - price_positive
